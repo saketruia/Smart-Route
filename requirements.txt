@@ -1,0 +1,6 @@
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14.0
+networkx>=3.2
+PyYAML>=6.0
+pytest>=8.0

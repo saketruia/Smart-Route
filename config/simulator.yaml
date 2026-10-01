@@ -1,0 +1,63 @@
+# SmartRoute simulator configuration.
+# NOTE: geography is SYNTHETIC. Coordinates are laid out on a fictional grid
+# and do not correspond to any real city.
+# Every key can be overridden from the CLI (see README).
+
+simulation:
+  seed: 42
+
+network:                 # ~780 intersections / ~3000 directed road segments
+  rows: 26
+  cols: 30
+  spacing_km: 0.8        # nominal distance between neighbouring intersections
+  jitter: 0.18           # random node displacement (fraction of spacing)
+  diagonal_prob: 0.04    # extra diagonal shortcut per grid cell
+  edge_removal_prob: 0.05  # drop some minor roads (connectivity is preserved)
+  highway_every: 6       # every 6th row/column is a highway corridor
+  arterial_every: 3      # every 3rd row/column is an arterial
+  express_links: 6       # long highway chords between corridor junctions
+  min_segment_km: 0.3
+  origin_lat: 20.0       # synthetic map centre (fictional)
+  origin_lon: 78.0
+
+vehicles:
+  count: 100000
+  home_zones: 80         # distinct residential origin nodes
+  work_hubs: 30          # distinct employment nodes
+  poi_count: 25          # shopping / leisure destinations
+  min_trip_km: 3.0       # minimum straight-line origin/destination distance
+  exploration_rate: 0.10 # chance a driver ignores habit and picks any candidate route
+
+traffic:
+  morning_start: "07:00"
+  morning_end: "10:00"
+  evening_start: "17:00"
+  evening_end: "20:00"
+  problem_segment_fraction: 0.02   # segments with a recurring severe jam window
+  problem_windows: [["18:00", "20:00"], ["07:30", "09:30"], ["12:00", "14:00"]]
+  problem_window_weights: [0.6, 0.25, 0.15]
+  incident_rate_per_segment_day: 0.004
+  noise_sigma: 0.05
+
+historical:
+  trips_per_vehicle: 10
+  days: 30
+  start_date: "2025-01-06"   # a Monday
+  chunk_vehicles: 2000       # vehicles processed per chunk (memory control)
+  output_dir: data
+  format: parquet            # parquet | csv
+  compression: zstd
+
+live:
+  vehicles: 100
+  events_per_second: 100
+  tick_seconds: 1.0
+  speedup: 1.0               # 1 = real time, 0 = as fast as possible
+  sink: stdout               # stdout | jsonl | null
+  output_path: data/live_events.jsonl
+  trips_path: data/live_trips.jsonl
+  duplicate_rate: 0.0
+  out_of_order_rate: 0.0
+  out_of_order_delay_s: [2.0, 15.0]
+  gps_noise_m: 3.0
+  dwell_s: [10.0, 60.0]      # parking time between trips

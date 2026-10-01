@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+data/*
+!data/.gitkeep
+*.jsonl
+
+# Local backup copies
+webapp-backup/
+webapp-v2-backup/

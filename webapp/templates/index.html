@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartRoute — Connected Vehicle Intelligence</title>
+  <link rel="stylesheet" href="/static/style.css?v=4">
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-logo"><span>Smart</span>Route</div>
+  <div class="splash-sub">CONNECTED VEHICLE INTELLIGENCE</div>
+  <div class="loader"><i></i></div>
+</div>
+
+<section id="login" class="screen">
+  <div class="login-card">
+    <div class="brand"><span>Smart</span>Route</div>
+    <div class="eyebrow">CONNECTED VEHICLE COCKPIT</div>
+    <h1>Choose your vehicle.</h1>
+    <p>Select a demo vehicle. SmartRoute loads its generated vehicle profile and telemetry before you plan the trip.</p>
+
+    <label>CONNECTED VEHICLE</label>
+    <div id="vehicleCards" class="vehicle-cards"></div>
+
+    <button id="enterBtn" class="primary" disabled>Enter cockpit <b>→</b></button>
+    <div class="secure">Synthetic telemetry environment · Demo mode</div>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header>
+    <div class="brand"><span>Smart</span>Route</div>
+    <div class="header-status"><i></i><span id="headerStatus">VEHICLE ONLINE</span><small id="clock"></small></div>
+  </header>
+
+  <main>
+    <aside class="sidebar">
+      <div class="vehicle-card">
+        <div class="vehicle-avatar">SR</div>
+        <div>
+          <div class="eyebrow">CONNECTED VEHICLE</div>
+          <h3 id="vehicleName">—</h3>
+          <span id="vehicleMeta">—</span>
+        </div>
+      </div>
+
+      <div id="setupSection">
+        <div class="section-title">PLAN YOUR DRIVE</div>
+
+        <label>DESTINATION</label>
+        <select id="destination">
+          <option value="">Choose a destination</option>
+        </select>
+
+        <label>DRIVING PREFERENCE</label>
+        <div class="modes">
+          <button data-priority="balanced" class="mode active">Balanced</button>
+          <button data-priority="time" class="mode">Fastest</button>
+          <button data-priority="fuel" class="mode">Fuel</button>
+          <button data-priority="distance" class="mode">Shortest</button>
+        </div>
+
+        <label>TRAFFIC TIME <b id="hourLabel">18:00</b></label>
+        <input id="hour" type="range" min="0" max="23" value="18">
+
+        <button id="routeBtn" class="primary">Find SmartRoute <b>→</b></button>
+      </div>
+
+      <div id="driveInfo" class="drive-info hidden">
+        <div class="section-title">LIVE DRIVE</div>
+        <div class="drive-stat"><span>Remaining</span><b id="sideRemaining">—</b></div>
+        <div class="drive-stat"><span>ETA</span><b id="sideEta">—</b></div>
+        <div class="drive-stat"><span>Speed</span><b id="sideSpeed">—</b></div>
+        <div class="drive-stat"><span>Fuel</span><b id="sideFuel">—</b></div>
+        <button id="rerouteBtn" class="secondary">Traffic changed · Re-route</button>
+        <button id="endTripBtn" class="end-btn">End Trip</button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <div class="topline">
+        <div>
+          <div class="eyebrow">PERSONALIZED ROUTE INTELLIGENCE</div>
+          <h1 id="headline">Where are you going?</h1>
+          <p id="subline">Choose a destination and driving preference.</p>
+        </div>
+        <div class="dataset-pill"><b id="datasetVehicles">—</b> vehicles · <b id="datasetEvents">—</b> telemetry events</div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="map-card">
+          <div class="map-head">
+            <span id="mapTitle">ROAD NETWORK</span>
+            <div><i class="legend live"></i> route <i class="legend road"></i> road network</div>
+          </div>
+
+          <svg id="map" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g id="roads"></g>
+            <g id="routeLayer"></g>
+            <g id="markers"></g>
+            <circle id="car" r="9" class="car hidden"></circle>
+          </svg>
+
+          <div class="map-badge" id="mapBadge">Select a destination to begin</div>
+
+          <div id="driveOverlay" class="drive-overlay hidden">
+            <div><small>DESTINATION</small><strong id="overlayDestination">—</strong></div>
+            <div><small>REMAINING</small><strong id="overlayRemaining">—</strong></div>
+            <div><small>ETA</small><strong id="overlayEta">—</strong></div>
+          </div>
+        </div>
+
+        <div class="telemetry-card">
+          <div class="card-head"><span>VEHICLE TELEMETRY</span><b class="pulse">LIVE</b></div>
+          <div class="hero-metric"><span>Current speed</span><strong id="speed">—</strong><em>km/h</em></div>
+          <div class="metric-row"><span>Fuel level</span><b id="fuel">—</b><div class="meter"><i id="fuelBar"></i></div></div>
+          <div class="metric-row"><span>Traffic exposure</span><b id="traffic">—</b><div class="meter"><i id="trafficBar"></i></div></div>
+          <div class="metric-row"><span>Current segment</span><b id="segment">—</b></div>
+          <div class="metric-row"><span>Vehicle state</span><b id="state">—</b></div>
+          <div class="location"><span>●</span><div><small>SIMULATED CURRENT LOCATION</small><b id="location">—</b></div></div>
+        </div>
+      </div>
+
+      <div id="routePanel" class="route-panel hidden">
+        <div class="route-main">
+          <div class="route-title">
+            <span class="route-icon">✦</span>
+            <div><small>SMARTROUTE RECOMMENDATION</small><h2 id="routeTitle">—</h2></div>
+          </div>
+          <div class="route-stats">
+            <div><strong id="routeDistance">—</strong><span>km</span></div>
+            <div><strong id="routeTime">—</strong><span>min</span></div>
+            <div><strong id="routeFuel">—</strong><span>L</span></div>
+            <div><strong id="routeTraffic">—</strong><span>traffic</span></div>
+          </div>
+          <div id="explanation" class="explanation"></div>
+        </div>
+        <div>
+          <button id="startDriveBtn" class="drive-start">Start Drive <b>▶</b></button>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <div class="card-head"><span>HISTORICAL TRAFFIC</span><small>24 HOURS</small></div>
+          <div id="trafficChart" class="bar-chart"></div>
+        </div>
+        <div class="analytics-card">
+          <div class="card-head"><span>FLEET DATA</span><small>GENERATED</small></div>
+          <div id="fleetChart" class="fleet-chart"></div>
+        </div>
+        <div class="analytics-card insight">
+          <div class="card-head"><span>ROUTE LOGIC</span><small>TRANSPARENT</small></div>
+          <div id="whyText">Run a route analysis to see the decision factors.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/static/app.js?v=4"></script>
+</body>
+</html>
